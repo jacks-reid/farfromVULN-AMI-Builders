@@ -18,3 +18,6 @@ packer build ffv_ubuntu.json
 ```
 
 An AMI will be built and provisioned and uploaded to your AWS account. It will then be tagged with "Name:farfromVULN_VPN" and "Release:Latest". This AMI is used with the farfromVULN project.
+
+## License
+This project is licensed under the terms of the GNU General Public License.
