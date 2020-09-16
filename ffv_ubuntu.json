@@ -1,0 +1,110 @@
+{
+  "variables": {
+    "aws_access_key": "",
+    "aws_secret_key": ""
+  },
+  "builders": [
+    {
+      "type": "amazon-ebs",
+      "access_key": "{{user `aws_access_key`}}",
+      "secret_key": "{{user `aws_secret_key`}}",
+      "region": "us-east-2",
+      "source_ami_filter": {
+        "filters": {
+          "virtualization-type": "hvm",
+          "name": "ubuntu/images/*ubuntu-xenial-16.04-amd64-server-*",
+          "root-device-type": "ebs"
+        },
+        "owners": ["099720109477"],
+        "most_recent": true
+      },
+      "instance_type": "t2.micro",
+      "ssh_username": "ubuntu",
+      "ami_name": "ffv-ubuntu {{timestamp}}"
+    }
+  ],
+    "provisioners": [
+	{
+	    "type": "shell",
+	    "inline": [
+		"sleep 30"
+	    ]
+	},
+      {
+	  "type": "file",
+	  "source": "pivpn_openvpn.conf",
+	  "destination": "/tmp/pivpn_openvpn.conf"
+      },
+      {
+	  "type": "file",
+	  "source": "flask/application.py",
+	  "destination": "/home/ubuntu/application.py"
+      },
+      {
+	  "type": "file",
+	  "source": "flask/templates/index_template.html",
+	  "destination": "/home/ubuntu/templates/index_template.html"
+      },
+      {
+	  "type": "file",
+	  "source": "flask/faq.html",
+	  "destination": "/home/ubuntu/faq.html"
+      },
+      {
+	  "type": "file",
+	  "source": "flask/images/kali_linux_logo.png",
+	  "destination": "/home/ubuntu/kali_linux_logo.png"	  
+      },
+      {
+	  "type": "file",
+	  "source": "flask/images/pivpn_logo.png",
+	  "destination": "/home/ubuntu/pivpn_logo.png"
+      },
+      {
+	  "type": "file",
+	  "source": "flask/images/vulnhub_logo.png",
+	  "destination": "/home/ubuntu/vulnhub_logo.png"
+      },
+      {
+	  "type": "file",
+	  "source": "wsgi.py",
+	  "destination": "/home/ubuntu/wsgi.py"
+      },
+      {
+	  "type": "file",
+	  "source": "ffv_webapp.service",
+	  "destination": "/home/ubuntu/ffv_webapp.service"
+      },	
+      {
+	  "type": "shell",
+	  "inline": ["curl -L https://install.pivpn.io > /home/ubuntu/install.sh",
+		     "sudo mkdir /usr/local/src/pivpn",
+		     "chmod +x /home/ubuntu/install.sh",
+		     "sudo apt update", 
+		     "sudo apt update",
+		     "sudo apt install -y openvpn",
+		     "sudo apt install -y grepcidr",
+		     "sudo apt install -y expect",
+		     "echo iptables-persistent iptables-persistent/autosave_v4 boolean true | sudo debconf-set-selections",
+		     "echo iptables-persistent iptables-persistent/autosave_v6 boolean true | sudo debconf-set-selections",
+		     "sudo apt install -y iptables-persistent",
+		     "sudo /home/ubuntu/install.sh --unattended /tmp/pivpn_openvpn.conf",
+		     "export FLASK_APP=/home/ubuntu/app.py",
+		     "curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py",
+		     "sudo apt install -y python3-pip",
+		     "pip3 install flask",
+		     "mv templates index_template.html",
+		     "mkdir templates",
+		     "mv index_template.html templates/",
+		     "mkdir images",
+		     "mv kali_linux_logo.png images/",
+		     "mv pivpn_logo.png images/",
+		     "mv vulnhub_logo.png images/",
+		     "openssl req -x509 -newkey rsa:4096 -nodes -out farfromVULN.pem -keyout farfromVULN.key -days 365 -subj /C=US/ST=CA/L=US/O=farfromVULN/CN=farfromVULN",
+		     "pip3 install gunicorn",
+		     "sudo mv ffv_webapp.service /etc/systemd/system/",
+		     "sudo systemctl enable ffv_webapp"
+		    ]
+      }
+  ]
+}

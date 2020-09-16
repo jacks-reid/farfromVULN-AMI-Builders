@@ -1,0 +1,1 @@
+{"Kali": {"sensitive": false, "type": "string", "value": "10.0.0.199"}, "PiVPN": {"sensitive": false, "type": "string", "value": "3.133.148.71"}}
