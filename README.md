@@ -1,9 +1,10 @@
 # farfromVULN-AMI-Builders
+
+## This project is no longer actively maintained
+
 A collection of the files used to build the AMI's used in the farfromVULN project.
 
 Currently only the PiVPN instance in farfromVULN uses a custom AMI. The purpose of creating a custom AMI is to provision an AMI that has the farfromVULN webapp up and running once an EC2 instance is deployed.
-
-## This project is no longer actively maintained
 
 ## Prerequisites
 Packer is the tool used to build the AMI.
